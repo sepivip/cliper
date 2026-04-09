@@ -232,7 +232,8 @@
       letter-spacing: 0.16px;
     }
     .pill.active { background: var(--pill-active-bg); color: var(--pill-active-fg); }
-    .pill:not(.active):hover { color: var(--fg); }
+    .pill:not(.active) { color: var(--fg); opacity: 0.55; }
+    .pill:not(.active):hover { opacity: 1; }
 
     /* Primary pill button (inverse of bg) */
     .btn-primary {
@@ -477,7 +478,7 @@
       }
       .card-title { white-space: normal; font-size: 18px; }
       .controls { flex-direction: column; align-items: stretch; }
-      .pill-group { justify-content: center; }
+      .pill-group { align-self: center; }
       .btn-primary { width: 100%; }
     }
   </style>
