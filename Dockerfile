@@ -7,6 +7,8 @@ RUN apt-get update && \
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+# Always grab the latest yt-dlp at build time (YouTube breaks it frequently)
+RUN pip install --no-cache-dir --upgrade yt-dlp
 
 COPY . .
 

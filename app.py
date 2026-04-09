@@ -143,6 +143,8 @@ def run_download(job_id, url, format_choice, format_id):
             "--no-playlist",
             "--max-filesize", str(MAX_FILESIZE),
             "--match-filter", f"duration<={MAX_DURATION_SEC}",
+            "--extractor-args", "youtube:player_client=tv,web_safari,web",
+            "--user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15",
             "-o", out_template,
         ]
 
@@ -218,7 +220,13 @@ def get_info():
     if err:
         return jsonify({"error": err}), 400
 
-    cmd = ["yt-dlp", "--no-playlist", "-j", url]
+    cmd = [
+        "yt-dlp",
+        "--no-playlist",
+        "--extractor-args", "youtube:player_client=tv,web_safari,web",
+        "--user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15",
+        "-j", url,
+    ]
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
         if result.returncode != 0:
