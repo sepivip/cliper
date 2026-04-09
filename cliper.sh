@@ -35,7 +35,7 @@ if [ ! -d "venv" ]; then
     echo "Setting up virtual environment..."
     python3 -m venv venv
     source venv/bin/activate
-    pip install -q flask yt-dlp
+    pip install -q -r requirements.txt
 else
     source venv/bin/activate
 fi
@@ -44,6 +44,6 @@ PORT="${PORT:-8899}"
 export PORT
 
 echo ""
-echo "  ReClip is running at http://localhost:$PORT"
+echo "  Cliper is running at http://localhost:$PORT"
 echo ""
 python3 app.py

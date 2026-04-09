@@ -1,66 +1,73 @@
-# ReClip
+# Cliper
 
-A self-hosted, open-source video and audio downloader with a clean web UI. Paste links from YouTube, TikTok, Instagram, Twitter/X, and 1000+ other sites — download as MP4 or MP3.
+A self-hosted media downloader with a clean web UI. Paste a link — get the file. Built on [yt-dlp](https://github.com/yt-dlp/yt-dlp) + Flask, designed to deploy safely as a public service (Turnstile, rate limits, domain allowlist, auto-cleanup) or run privately on your own machine.
 
-![Python](https://img.shields.io/badge/python-3.8+-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-
-https://github.com/user-attachments/assets/419d3e50-c933-444b-8cab-a9724986ba05
-
-![ReClip MP3 Mode](assets/preview-mp3.png)
+Originally forked from `reclip`, rebuilt with hardening and a Revolut-style redesign.
 
 ## Features
 
-- Download videos from 1000+ supported sites (via [yt-dlp](https://github.com/yt-dlp/yt-dlp))
-- MP4 video or MP3 audio extraction
-- Quality/resolution picker
-- Bulk downloads — paste multiple URLs at once
-- Automatic URL deduplication
-- Clean, responsive UI — no frameworks, no build step
-- Single Python file backend (~150 lines)
+- MP4 video or MP3 audio downloads
+- Quality picker, bulk paste, auto-cleanup (30 min TTL)
+- Cloudflare Turnstile bot protection (optional)
+- Per-IP rate limiting (`CF-Connecting-IP` aware)
+- Domain allowlist (YouTube, TikTok, X, Instagram, FB, Reddit, Vimeo, SoundCloud)
+- Max duration / filesize caps
+- SSRF protection (private IPs blocked)
+- Concurrency semaphore + gunicorn production server
+- Single-file backend, vanilla JS frontend
 
-## Quick Start
+## Local quick start
 
 ```bash
-brew install yt-dlp ffmpeg    # or apt install ffmpeg && pip install yt-dlp
-git clone https://github.com/averygan/reclip.git
-cd reclip
-./reclip.sh
+brew install yt-dlp ffmpeg      # or: apt install ffmpeg && pip install yt-dlp
+./cliper.sh
 ```
 
 Open **http://localhost:8899**.
 
-Or with Docker:
+Or Docker:
 
 ```bash
-docker build -t reclip . && docker run -p 8899:8899 reclip
+docker build -t cliper .
+docker run -p 8899:8899 cliper
 ```
 
-## Usage
+## Deploy on Railway
 
-1. Paste one or more video URLs into the input box
-2. Choose **MP4** (video) or **MP3** (audio)
-3. Click **Fetch** to load video info and thumbnails
-4. Select quality/resolution if available
-5. Click **Download** on individual videos, or **Download All**
+1. Push this repo to GitHub
+2. Create a new Railway project → **Deploy from GitHub repo**
+3. Railway auto-detects the Dockerfile and builds
+4. In **Variables**, optionally set:
+   - `TURNSTILE_SITE_KEY` — Cloudflare Turnstile site key
+   - `TURNSTILE_SECRET_KEY` — Cloudflare Turnstile secret
+5. **Settings → Networking → Generate Domain**
+6. (Recommended) Put Cloudflare in front and add a geo-block rule to restrict countries
 
-## Supported Sites
+Set a **spending cap** in Railway so traffic spikes can't drain your account.
 
-Anything [yt-dlp supports](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md), including:
+### Tuning
 
-YouTube, TikTok, Instagram, Twitter/X, Reddit, Facebook, Vimeo, Twitch, Dailymotion, SoundCloud, Loom, Streamable, Pinterest, Tumblr, Threads, LinkedIn, and many more.
+All knobs live at the top of [app.py](app.py):
+
+```python
+ALLOWED_DOMAINS = {...}
+MAX_DURATION_SEC = 30 * 60
+MAX_FILESIZE = 500 * 1024 * 1024
+FILE_TTL_SEC = 30 * 60
+MAX_CONCURRENT_DOWNLOADS = 4
+```
 
 ## Stack
 
-- **Backend:** Python + Flask (~150 lines)
-- **Frontend:** Vanilla HTML/CSS/JS (single file, no build step)
-- **Download engine:** [yt-dlp](https://github.com/yt-dlp/yt-dlp) + [ffmpeg](https://ffmpeg.org/)
-- **Dependencies:** 2 (Flask, yt-dlp)
+- **Backend:** Python · Flask · gunicorn · flask-limiter
+- **Frontend:** Vanilla HTML/CSS/JS (single file, no build)
+- **Downloader:** yt-dlp + ffmpeg
+- **Deploy:** Docker, Railway-ready
 
 ## Disclaimer
 
-This tool is intended for personal use only. Please respect copyright laws and the terms of service of the platforms you download from. The developers are not responsible for any misuse of this tool.
+Personal use only. Respect copyright and the terms of service of the platforms you download from.
 
 ## License
 
-[MIT](LICENSE)
+MIT

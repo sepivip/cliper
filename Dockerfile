@@ -12,4 +12,5 @@ COPY . .
 
 EXPOSE 8899
 ENV HOST=0.0.0.0
-CMD ["python", "app.py"]
+ENV PORT=8899
+CMD ["sh", "-c", "gunicorn -w 2 -k gthread --threads 8 -t 320 -b 0.0.0.0:${PORT:-8899} app:app"]

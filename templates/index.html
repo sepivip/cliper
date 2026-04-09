@@ -3,155 +3,235 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ReClip — Free Media Downloader</title>
+  <title>Cliper — Free Media Downloader</title>
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <meta name="description" content="Cliper — paste a link, get the file. Free video and audio downloader.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  {% if turnstile_site_key %}
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  {% endif %}
   <style>
     :root {
-      --bg: #f4f1eb;
-      --fg: #3a3a38;
-      --accent: #e85d2a;
-      --accent-hover: #d04e1f;
-      --muted: #9c9889;
-      --card: #fff;
-      --card-border: #e2ded6;
-      --success: #2d8a4e;
-      --error: #c43d3d;
-      --radius: 14px;
-      --shimmer: linear-gradient(90deg, #ebe8e2 25%, #f0ede7 50%, #ebe8e2 75%);
+      --dark: #191c1f;
+      --white: #ffffff;
+      --surface: #f4f4f4;
+      --border: #e6e6e6;
+      --text-mid: #505a63;
+      --text-muted: #8d969e;
+      --danger: #e23b4a;
+      --success: #00a87e;
+      --blue: #494fdf;
+      --radius-sm: 12px;
+      --radius-md: 20px;
+      --radius-pill: 9999px;
+      --font-display: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    body {
-      font-family: 'DM Mono', monospace;
-      background: var(--bg);
-      color: var(--fg);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+    html, body { background: var(--white); }
 
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      opacity: 0.03;
-      pointer-events: none;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-      background-size: 128px;
+    body {
+      font-family: var(--font-body);
+      color: var(--dark);
+      min-height: 100vh;
+      font-size: 16px;
+      line-height: 1.5;
+      letter-spacing: 0.16px;
+      -webkit-font-smoothing: antialiased;
     }
 
     .page {
-      max-width: 620px;
+      max-width: 780px;
       margin: 0 auto;
-      padding: 60px 24px 80px;
+      padding: 80px 24px 120px;
     }
 
-    .brand { margin-bottom: 48px; }
-    .brand h1 {
-      font-family: 'Instrument Serif', serif;
-      font-size: 4.2rem;
-      font-weight: 400;
-      letter-spacing: -0.03em;
-      line-height: 1;
-      color: var(--fg);
+    /* Nav */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 88px;
     }
-    .brand h1 em { font-style: italic; color: var(--accent); }
-    .brand p {
-      margin-top: 10px;
-      font-size: 0.78rem;
-      color: var(--muted);
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+    .nav-brand {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.4px;
+      color: var(--dark);
+    }
+    .nav-brand span { color: var(--blue); }
+    .nav-tag {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-mid);
+      letter-spacing: 0.16px;
+    }
+
+    /* Hero */
+    .hero {
+      margin-bottom: 48px;
+    }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(48px, 9vw, 104px);
+      font-weight: 500;
+      line-height: 1.00;
+      letter-spacing: -2.08px;
+      color: var(--dark);
+      margin-bottom: 24px;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--blue);
+    }
+    .hero p {
+      font-size: 18px;
+      line-height: 1.56;
+      letter-spacing: -0.09px;
+      color: var(--text-mid);
+      max-width: 540px;
+    }
+
+    /* Form */
+    .form-card {
+      margin-top: 48px;
+      padding: 28px;
+      background: var(--surface);
+      border-radius: var(--radius-md);
     }
 
     textarea {
       width: 100%;
       padding: 18px 20px;
-      border: 1.5px solid var(--card-border);
-      border-radius: var(--radius);
-      background: var(--card);
-      color: var(--fg);
-      font-family: 'DM Mono', monospace;
-      font-size: 0.88rem;
+      border: 2px solid transparent;
+      border-radius: var(--radius-sm);
+      background: var(--white);
+      color: var(--dark);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.5;
+      letter-spacing: 0.16px;
       outline: none;
       resize: none;
-      min-height: 56px;
-      transition: border-color 0.25s, box-shadow 0.25s;
-      margin-bottom: 6px;
+      min-height: 60px;
+      transition: border-color 0.2s;
     }
-    textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(232, 93, 42, 0.08);
-    }
-    textarea::placeholder { color: var(--muted); }
+    textarea:focus { border-color: var(--dark); }
+    textarea::placeholder { color: var(--text-muted); }
 
     .hint {
-      font-size: 0.7rem;
-      color: var(--muted);
-      margin-bottom: 20px;
-      letter-spacing: 0.02em;
+      font-size: 14px;
+      color: var(--text-mid);
+      margin-top: 10px;
+      letter-spacing: 0.16px;
     }
 
     .controls {
       display: flex;
-      gap: 10px;
-      margin-bottom: 6px;
+      gap: 12px;
+      margin-top: 20px;
       align-items: center;
+      flex-wrap: wrap;
     }
+
     .pill-group {
       display: flex;
-      border: 1.5px solid var(--card-border);
-      border-radius: 10px;
-      overflow: hidden;
-      background: var(--card);
+      background: var(--white);
+      border-radius: var(--radius-pill);
+      padding: 4px;
+      gap: 2px;
     }
     .pill {
-      padding: 9px 18px;
-      font-family: 'DM Mono', monospace;
-      font-size: 0.76rem;
+      padding: 10px 22px;
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 600;
       border: none;
       background: transparent;
-      color: var(--muted);
+      color: var(--text-mid);
+      cursor: pointer;
+      border-radius: var(--radius-pill);
+      transition: all 0.2s;
+      letter-spacing: 0.16px;
+    }
+    .pill.active { background: var(--dark); color: var(--white); }
+    .pill:not(.active):hover { color: var(--dark); }
+
+    /* Primary dark pill button */
+    .btn-primary {
+      padding: 14px 32px;
+      border: none;
+      border-radius: var(--radius-pill);
+      background: var(--dark);
+      color: var(--white);
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      letter-spacing: 0.16px;
+      flex: 1;
+      min-width: 140px;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Secondary light pill */
+    .btn-secondary {
+      padding: 10px 22px;
+      border: none;
+      border-radius: var(--radius-pill);
+      background: var(--surface);
+      color: var(--dark);
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      letter-spacing: 0.16px;
+    }
+    .btn-secondary:hover { opacity: 0.85; }
+    .btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Outlined pill */
+    .btn-outline {
+      padding: 8px 18px;
+      background: transparent;
+      color: var(--dark);
+      border: 2px solid var(--dark);
+      border-radius: var(--radius-pill);
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
+      letter-spacing: 0.16px;
     }
-    .pill.active { background: var(--fg); color: var(--bg); }
-    .pill:not(.active):hover { color: var(--fg); }
+    .btn-outline.active {
+      background: var(--dark);
+      color: var(--white);
+    }
+    .btn-outline:hover:not(.active) { background: rgba(25,28,31,0.06); }
 
-    .fetch-btn {
-      flex: 1;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 10px;
-      background: var(--accent);
-      color: #fff;
-      font-family: 'DM Mono', monospace;
-      font-size: 0.82rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-    .fetch-btn:hover { background: var(--accent-hover); }
-    .fetch-btn:active { transform: scale(0.98); }
-    .fetch-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    /* Turnstile */
+    .cf-turnstile { margin-top: 16px; }
 
     /* Cards */
-    .cards { margin-top: 24px; }
+    .cards { margin-top: 32px; }
 
     .card {
       display: flex;
-      gap: 14px;
-      border: 1.5px solid var(--card-border);
-      border-radius: var(--radius);
-      background: var(--card);
-      padding: 14px;
-      margin-bottom: 10px;
+      gap: 20px;
+      background: var(--white);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 14px;
+      border: 1px solid var(--border);
       animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
     @keyframes slideUp {
@@ -160,12 +240,12 @@
     }
 
     .card-thumb {
-      width: 120px;
-      min-width: 120px;
-      height: 80px;
-      border-radius: 8px;
+      width: 160px;
+      min-width: 160px;
+      height: 100px;
+      border-radius: var(--radius-sm);
       overflow: hidden;
-      background: var(--card-border);
+      background: var(--surface);
       flex-shrink: 0;
       position: relative;
     }
@@ -175,36 +255,28 @@
       object-fit: cover;
       display: block;
     }
-    /* No-thumbnail icon */
     .card-thumb .no-thumb {
       width: 100%;
       height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--muted);
+      color: var(--text-muted);
     }
-    .card-thumb .no-thumb svg {
-      width: 28px;
-      height: 28px;
-      opacity: 0.5;
-    }
+    .card-thumb .no-thumb svg { width: 32px; height: 32px; opacity: 0.6; }
 
-    /* Shimmer skeleton for loading state */
-    .card-thumb.loading {
-      background: var(--shimmer);
+    /* Shimmer */
+    .shimmer {
+      background: linear-gradient(90deg, #ececec 25%, #f6f6f6 50%, #ececec 75%);
       background-size: 200% 100%;
       animation: shimmer 1.5s infinite;
     }
     .skeleton-line {
-      height: 12px;
-      border-radius: 4px;
-      background: var(--shimmer);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      margin-bottom: 6px;
+      height: 14px;
+      border-radius: 6px;
+      margin-bottom: 8px;
     }
-    .skeleton-line.short { width: 40%; height: 10px; }
+    .skeleton-line.short { width: 40%; height: 12px; }
     .skeleton-line.medium { width: 75%; }
     @keyframes shimmer {
       0% { background-position: 200% 0; }
@@ -219,197 +291,176 @@
       justify-content: center;
     }
     .card-title {
-      font-family: 'Instrument Serif', serif;
-      font-size: 1rem;
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 600;
       line-height: 1.3;
-      color: var(--fg);
-      margin-bottom: 2px;
+      letter-spacing: -0.2px;
+      color: var(--dark);
+      margin-bottom: 4px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
     .card-meta {
-      font-size: 0.68rem;
-      color: var(--muted);
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-      margin-bottom: 8px;
+      font-size: 14px;
+      color: var(--text-mid);
+      letter-spacing: 0.16px;
+      margin-bottom: 14px;
     }
 
     .card-actions {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       align-items: center;
       flex-wrap: wrap;
     }
 
-    .card-dl-btn {
-      padding: 6px 14px;
-      border: none;
-      border-radius: 7px;
-      background: var(--fg);
-      color: var(--bg);
-      font-family: 'DM Mono', monospace;
-      font-size: 0.7rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-    }
-    .card-dl-btn:hover { background: #2d2d2a; }
-    .card-dl-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .card-dl-btn.done { background: var(--success); color: #fff; }
-    .card-dl-btn.error { background: var(--error); color: #fff; }
-
     .card-status {
-      font-size: 0.68rem;
-      color: var(--muted);
+      font-size: 14px;
+      color: var(--text-mid);
+      font-weight: 500;
     }
-    .card-status.downloading { color: var(--accent); }
+    .card-status.downloading { color: var(--blue); }
     .card-status.done { color: var(--success); }
-    .card-status.error { color: var(--error); }
+    .card-status.error { color: var(--danger); }
 
-    .q-chip {
-      padding: 4px 10px;
-      border: 1.5px solid var(--card-border);
-      border-radius: 6px;
-      background: transparent;
-      color: var(--muted);
-      font-family: 'DM Mono', monospace;
-      font-size: 0.65rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .q-chip.active {
-      border-color: var(--fg);
-      color: var(--fg);
-      background: rgba(26,26,24,0.04);
-    }
-    .q-chip:hover:not(.active) { border-color: var(--muted); }
-
-    /* Error card */
-    .card.card-error {
-      border-color: rgba(196, 61, 61, 0.2);
-      background: rgba(196, 61, 61, 0.03);
-    }
+    .card.card-error { border-color: rgba(226,59,74,0.3); }
     .card-error-icon {
       width: 100%;
       height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(196, 61, 61, 0.08);
-      color: var(--error);
+      background: rgba(226,59,74,0.08);
+      color: var(--danger);
     }
-    .card-error-icon svg {
-      width: 24px;
-      height: 24px;
-    }
+    .card-error-icon svg { width: 28px; height: 28px; }
     .card-error-msg {
-      font-size: 0.72rem;
-      color: var(--error);
-      margin-top: 2px;
-      line-height: 1.4;
-    }
-    .card-error-url {
-      font-size: 0.65rem;
-      color: var(--muted);
-      word-break: break-all;
+      font-size: 14px;
+      color: var(--danger);
+      font-weight: 500;
       margin-top: 4px;
     }
+    .card-error-url {
+      font-size: 13px;
+      color: var(--text-muted);
+      word-break: break-all;
+      margin-top: 6px;
+    }
 
-    /* Download all bar */
-    .dl-all-bar {
-      display: flex;
-      gap: 10px;
-      margin-top: 16px;
+    .dl-all-bar { margin-top: 20px; }
+    .btn-success {
+      background: var(--dark);
+      color: var(--white);
     }
-    .dl-all-btn {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      background: var(--fg);
-      color: var(--bg);
-      font-family: 'DM Mono', monospace;
-      font-size: 0.82rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-    .dl-all-btn:hover { background: #2d2d2a; }
-    .dl-all-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
     .spin {
       display: inline-block;
-      width: 10px; height: 10px;
+      width: 12px; height: 12px;
       border: 2px solid currentColor;
       border-right-color: transparent;
       border-radius: 50%;
       animation: spin 0.6s linear infinite;
       vertical-align: middle;
+      margin-right: 6px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* Supported platforms */
+    .platforms {
+      margin-top: 80px;
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+    }
+    .platforms h3 {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 500;
+      letter-spacing: -0.24px;
+      color: var(--dark);
+      margin-bottom: 20px;
+    }
+    .platforms p {
+      font-size: 16px;
+      line-height: 1.56;
+      color: var(--text-mid);
+      letter-spacing: 0.16px;
+    }
+
     .footer {
-      margin-top: 48px;
-      text-align: center;
-      font-size: 0.68rem;
-      color: var(--muted);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      line-height: 1.8;
+      margin-top: 80px;
+      font-size: 14px;
+      color: var(--text-muted);
+      letter-spacing: 0.16px;
     }
 
     /* Mobile */
-    @media (max-width: 500px) {
-      .brand h1 { font-size: 3rem; }
-      .page { padding: 40px 16px 60px; }
-      .card { flex-direction: column; gap: 10px; }
+    @media (max-width: 640px) {
+      .page { padding: 40px 20px 80px; }
+      .nav { margin-bottom: 56px; }
+      .hero h1 { letter-spacing: -1.2px; }
+      .form-card { padding: 20px; }
+      .card { flex-direction: column; gap: 14px; padding: 16px; }
       .card-thumb {
         width: 100%;
         min-width: unset;
-        height: 160px;
+        height: 200px;
       }
-      .card-title { white-space: normal; }
-      .controls { flex-wrap: wrap; }
-      .fetch-btn { width: 100%; }
+      .card-title { white-space: normal; font-size: 18px; }
+      .controls { flex-direction: column; align-items: stretch; }
+      .pill-group { justify-content: center; }
+      .btn-primary { width: 100%; }
     }
   </style>
 </head>
 <body>
   <div class="page">
-    <div class="brand">
-      <h1>Re<em>Clip</em></h1>
-      <p>Free media downloader</p>
+    <nav class="nav">
+      <div class="nav-brand">cliper<span>.</span></div>
+      <div class="nav-tag">Free · No signup</div>
+    </nav>
+
+    <div class="hero">
+      <h1>Paste a link.<br>Get the <em>file</em>.</h1>
+      <p>A free, fast media downloader. YouTube, TikTok, Instagram, X, and more — no ads, no signup, no nonsense.</p>
     </div>
 
-    <textarea id="urls" placeholder="Paste one or more URLs..." rows="2"></textarea>
-    <p class="hint">Multiple links? Separate with spaces, commas, or newlines.</p>
+    <div class="form-card">
+      <textarea id="urls" placeholder="Paste one or more URLs..." rows="2"></textarea>
+      <p class="hint">Multiple links? Separate with spaces, commas, or newlines.</p>
 
-    <div class="controls">
-      <div class="pill-group">
-        <button class="pill active" data-format="video" onclick="setFormat(this)">MP4</button>
-        <button class="pill" data-format="audio" onclick="setFormat(this)">MP3</button>
+      <div class="controls">
+        <div class="pill-group">
+          <button class="pill active" data-format="video" onclick="setFormat(this)">MP4</button>
+          <button class="pill" data-format="audio" onclick="setFormat(this)">MP3</button>
+        </div>
+        <button class="btn-primary" id="goBtn" onclick="go()">Fetch</button>
       </div>
-      <button class="fetch-btn" id="goBtn" onclick="go()">Fetch</button>
+
+      {% if turnstile_site_key %}
+      <div class="cf-turnstile" data-sitekey="{{ turnstile_site_key }}" data-callback="onTurnstile" data-theme="light"></div>
+      {% endif %}
     </div>
 
     <div id="cards" class="cards"></div>
 
+    <div class="platforms">
+      <h3>Works with 1000+ sites</h3>
+      <p>YouTube · TikTok · Instagram · X (Twitter) · Facebook · Reddit · Vimeo · SoundCloud · and many more.</p>
+    </div>
+
     <div class="footer">
-      YouTube &middot; TikTok &middot; Instagram &middot; Twitter/X &middot; Reddit &middot; Facebook<br>
-      Vimeo &middot; Twitch &middot; Dailymotion &middot; SoundCloud &middot; Loom &middot; Streamable<br>
-      Pinterest &middot; Tumblr &middot; Threads &middot; LinkedIn &middot; 1000+ more
+      Built for personal use. Respect copyright.
     </div>
   </div>
 
   <script>
     let currentFormat = 'video';
     let cardData = [];
+    let cfToken = '';
+
+    function onTurnstile(token) { cfToken = token; }
 
     function setFormat(btn) {
       document.querySelectorAll('.pill').forEach(b => b.classList.remove('active'));
@@ -435,6 +486,10 @@
     }
 
     function friendlyError(err) {
+      if (!err) return 'Something went wrong';
+      if (err.includes('Domain not supported')) return 'This site is not supported';
+      if (err.includes('Bot check')) return 'Bot check failed — reload the page';
+      if (err.includes('too long') || err.includes('too large')) return err;
       if (err.includes('Unsupported URL')) return 'This URL is not supported';
       if (err.includes('Video unavailable')) return 'Video is unavailable or private';
       if (err.includes('Private video')) return 'This video is private';
@@ -443,8 +498,8 @@
       if (err.includes('copyright')) return 'Video blocked due to copyright';
       if (err.includes('geo')) return 'Video not available in your region';
       if (err.includes('timed out') || err.includes('Timed out')) return 'Request timed out — try again';
-      if (err.includes('network') || err.includes('Network')) return 'Network error — check your connection';
-      return err.length > 80 ? err.slice(0, 80) + '...' : err;
+      if (err.includes('Too Many')) return 'Too many requests — try again later';
+      return err.length > 100 ? err.slice(0, 100) + '...' : err;
     }
 
     document.getElementById('urls').addEventListener('keydown', e => {
@@ -513,20 +568,18 @@
         document.getElementById('cards').appendChild(el);
       }
 
-      // Loading skeleton
       if (c.status === 'loading') {
         el.className = 'card';
         el.innerHTML = `
-          <div class="card-thumb loading"></div>
+          <div class="card-thumb shimmer"></div>
           <div class="card-body">
-            <div class="skeleton-line medium"></div>
-            <div class="skeleton-line short"></div>
+            <div class="skeleton-line medium shimmer"></div>
+            <div class="skeleton-line short shimmer"></div>
           </div>
         `;
         return;
       }
 
-      // Error state
       if (c.status === 'info-error') {
         el.className = 'card card-error';
         el.innerHTML = `
@@ -536,7 +589,7 @@
             </div>
           </div>
           <div class="card-body">
-            <div class="card-title" style="color:var(--error)">Could not fetch video</div>
+            <div class="card-title" style="color:var(--danger)">Could not fetch video</div>
             <div class="card-error-msg">${esc(friendlyError(c.error || ''))}</div>
             <div class="card-error-url">${esc(c.url)}</div>
           </div>
@@ -544,13 +597,12 @@
         return;
       }
 
-      // Ready / downloading / done / error states
       el.className = 'card';
       const isAudio = currentFormat === 'audio';
 
       let thumbHtml;
       if (isAudio) {
-        thumbHtml = `<div class="no-thumb" style="color:var(--accent)"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>`;
+        thumbHtml = `<div class="no-thumb" style="color:var(--blue)"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>`;
       } else if (c.thumbnail) {
         thumbHtml = `<img src="${c.thumbnail}" alt="">`;
       } else {
@@ -560,20 +612,20 @@
       let qualityChips = '';
       if (!isAudio && c.formats && c.formats.length > 1) {
         qualityChips = c.formats.map(f =>
-          `<button class="q-chip${f.id === c.selectedFormatId ? ' active' : ''}" onclick="pickFormat(${idx}, '${f.id}')">${f.label}</button>`
+          `<button class="btn-outline${f.id === c.selectedFormatId ? ' active' : ''}" onclick="pickFormat(${idx}, '${f.id}')">${f.label}</button>`
         ).join('');
       }
 
       let actionHtml = '';
       if (c.status === 'ready') {
-        actionHtml = `<button class="card-dl-btn" onclick="dlCard(${idx})">Download</button>${qualityChips}`;
+        actionHtml = `<button class="btn-secondary" onclick="dlCard(${idx})">Download</button>${qualityChips}`;
       } else if (c.status === 'downloading') {
-        actionHtml = `<span class="card-status downloading"><span class="spin"></span> Downloading...</span>`;
+        actionHtml = `<span class="card-status downloading"><span class="spin"></span>Downloading...</span>`;
       } else if (c.status === 'done') {
-        actionHtml = `<button class="card-dl-btn done" onclick="saveCard(${idx})">Save</button>
+        actionHtml = `<button class="btn-secondary" onclick="saveCard(${idx})">Save file</button>
           <span class="card-status done">${esc(c.filename || '')}</span>`;
       } else if (c.status === 'error') {
-        actionHtml = `<button class="card-dl-btn" onclick="dlCard(${idx})">Retry</button>
+        actionHtml = `<button class="btn-secondary" onclick="dlCard(${idx})">Retry</button>
           <span class="card-status error">${esc(friendlyError(c.error || 'Download failed'))}</span>`;
       }
 
@@ -594,7 +646,7 @@
       const bar = document.createElement('div');
       bar.id = 'dl-all-bar';
       bar.className = 'dl-all-bar';
-      bar.innerHTML = `<button class="dl-all-btn" onclick="dlAll()">Download All</button>`;
+      bar.innerHTML = `<button class="btn-primary" onclick="dlAll()">Download all</button>`;
       document.getElementById('cards').appendChild(bar);
     }
 
@@ -618,6 +670,7 @@
             format: currentFormat,
             format_id: c.selectedFormatId,
             title: c.title || '',
+            cf_token: cfToken,
           }),
         });
         const data = await res.json();
@@ -660,7 +713,7 @@
           c.error = 'Lost connection to server';
           renderCard(idx);
         }
-      }, 1000);
+      }, 1500);
     }
 
     function saveCard(idx) {
@@ -673,7 +726,7 @@
     }
 
     async function dlAll() {
-      const btn = document.querySelector('.dl-all-btn');
+      const btn = document.querySelector('#dl-all-bar .btn-primary');
       if (btn) { btn.disabled = true; btn.textContent = 'Downloading...'; }
 
       for (let i = 0; i < cardData.length; i++) {
@@ -682,7 +735,7 @@
         }
       }
 
-      if (btn) { btn.disabled = false; btn.textContent = 'Download All'; }
+      if (btn) { btn.disabled = false; btn.textContent = 'Download all'; }
     }
   </script>
 </body>
