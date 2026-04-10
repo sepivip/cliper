@@ -446,18 +446,18 @@
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* Ad banner */
-    .ad-banner {
+    .promo-strip {
       margin-top: 48px;
       display: flex;
       justify-content: center;
     }
-    .ad-banner a { display: block; border-radius: var(--radius-sm); overflow: hidden; transition: opacity 0.2s; }
-    .ad-banner a:hover { opacity: 0.9; }
-    .ad-banner img { display: block; }
-    .ad-mobile { display: none; }
+    .promo-strip a { display: block; border-radius: var(--radius-sm); overflow: hidden; transition: opacity 0.2s; }
+    .promo-strip a:hover { opacity: 0.9; }
+    .promo-strip img { display: block; }
+    .promo-compact { display: none; }
     @media (max-width: 640px) {
-      .ad-desktop { display: none; }
-      .ad-mobile { display: block; }
+      .promo-wide { display: none; }
+      .promo-compact { display: block; }
     }
 
     /* Supported platforms */
@@ -544,10 +544,10 @@
 
     <div id="cards" class="cards"></div>
 
-    <div class="ad-banner">
+    <div class="promo-strip">
       <a href="https://toppio.xyz/" target="_blank" rel="noopener">
-        <img class="ad-desktop" src="/static/banner_728x90.png" alt="Toppio" width="728" height="90">
-        <img class="ad-mobile" src="/static/banner_320x100.png" alt="Toppio" width="320" height="100">
+        <img class="promo-wide" src="/static/banner_728x90.png" alt="Toppio" width="728" height="90">
+        <img class="promo-compact" src="/static/banner_320x100.png" alt="Toppio" width="320" height="100">
       </a>
     </div>
 
