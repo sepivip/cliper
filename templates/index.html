@@ -189,7 +189,7 @@
 
     textarea {
       width: 100%;
-      padding: 18px 20px;
+      padding: 18px 110px 18px 20px;
       border: 2px solid var(--border);
       border-radius: var(--radius-sm);
       background: var(--input-bg);
@@ -200,38 +200,38 @@
       letter-spacing: 0.16px;
       outline: none;
       resize: none;
-      min-height: 96px;
+      min-height: 60px;
       transition: border-color 0.2s, background 0.2s;
     }
-    textarea:focus { border-color: var(--fg); }
+    textarea:focus { border-color: var(--fg); padding-right: 20px; }
     textarea::placeholder { color: var(--text-muted); }
 
     .paste-btn {
       position: absolute;
       top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      right: 10px;
+      transform: translateY(-50%);
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 12px 26px;
-      border: none;
+      gap: 6px;
+      padding: 8px 14px;
+      border: 1px solid var(--border);
       border-radius: var(--radius-pill);
-      background: var(--btn-bg);
-      color: var(--btn-fg);
+      background: var(--btn-secondary-bg);
+      color: var(--btn-secondary-fg);
       font-family: var(--font-display);
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       letter-spacing: 0.16px;
       cursor: pointer;
       white-space: nowrap;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
-      transition: opacity 0.15s, box-shadow 0.15s;
+      transition: opacity 0.15s;
     }
-    .paste-btn:hover { opacity: 0.9; }
-    .paste-btn:active { transform: translate(-50%, -50%) scale(0.97); }
-    .paste-btn svg { width: 16px; height: 16px; }
-    textarea:not(:placeholder-shown) ~ .paste-btn { display: none; }
+    .paste-btn:hover { opacity: 0.85; }
+    .paste-btn:active { transform: translateY(-50%) scale(0.97); }
+    .paste-btn svg { width: 14px; height: 14px; }
+    textarea:not(:placeholder-shown) ~ .paste-btn,
+    textarea:focus ~ .paste-btn { display: none; }
 
     .hint {
       font-size: 14px;
@@ -559,7 +559,7 @@
         <textarea id="urls" placeholder="Paste one or more URLs..." rows="2"></textarea>
         <button class="paste-btn" id="pasteBtn" onclick="pasteUrl()" aria-label="Paste from clipboard">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
-          <span>Paste link</span>
+          <span>Paste</span>
         </button>
       </div>
       <p class="hint">Multiple links? Separate with spaces, commas, or newlines.</p>
