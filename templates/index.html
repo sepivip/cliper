@@ -189,7 +189,7 @@
 
     textarea {
       width: 100%;
-      padding: 18px 110px 18px 20px;
+      padding: 18px 20px;
       border: 2px solid var(--border);
       border-radius: var(--radius-sm);
       background: var(--input-bg);
@@ -203,7 +203,9 @@
       min-height: 60px;
       transition: border-color 0.2s, background 0.2s;
     }
-    textarea:focus { border-color: var(--fg); padding-right: 20px; }
+    textarea:focus { border-color: var(--fg); }
+    textarea:placeholder-shown { padding-right: 110px; }
+    textarea:placeholder-shown:focus:not(:focus-visible) { padding-right: 20px; }
     textarea::placeholder { color: var(--text-muted); }
 
     .paste-btn {
@@ -231,7 +233,7 @@
     .paste-btn:active { transform: translateY(-50%) scale(0.97); }
     .paste-btn svg { width: 14px; height: 14px; }
     textarea:not(:placeholder-shown) ~ .paste-btn,
-    textarea:focus ~ .paste-btn { display: none; }
+    textarea:focus:not(:focus-visible) ~ .paste-btn { display: none; }
 
     .hint {
       font-size: 14px;
